@@ -1,0 +1,589 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI辅助NRC开具系统 - 贝迪克凌云 | 737MAX</title>
+<style>
+:root{--primary:#1a3365;--accent:#e67e22;--ai:#8e44ad;--bg:#e8e8e8;--bd:#000}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'SimSun','宋体','Microsoft YaHei',sans-serif;background:var(--bg);color:#000;font-size:13px}
+.top-bar{background:linear-gradient(135deg,#0a1628,#1a3a5c);color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.top-bar .company{font-size:14px;font-weight:700}
+.top-bar .company-en{font-size:9px;opacity:.7}
+.top-bar .badge{background:var(--ai);color:#fff;padding:3px 12px;border-radius:10px;font-size:10px;font-weight:600}
+.nav{background:#fff;border-bottom:2px solid var(--primary);display:flex;padding:0 20px;overflow-x:auto;position:sticky;top:40px;z-index:99}
+.nav a{padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;color:#666;text-decoration:none;transition:.2s;white-space:nowrap}
+.nav a:hover,.nav a.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.main{max-width:1100px;margin:0 auto;padding:16px}
+.page{display:none}.page.active{display:block}
+
+/* AI Panel */
+.ai-panel{background:linear-gradient(135deg,#f5e6ff,#e8f4fd);border:2px solid var(--ai);border-radius:8px;padding:14px;margin-bottom:14px}
+.ai-panel .ai-title{font-size:12px;color:var(--ai);font-weight:600;margin-bottom:8px}
+.ai-input-row{display:flex;gap:8px}
+.ai-input-row textarea{flex:1;min-height:48px;border:1px solid #d5b3e8;border-radius:6px;padding:8px;font-size:12px;font-family:inherit;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;transition:.2s}
+.btn-purple{background:var(--ai);color:#fff}.btn-purple:hover{opacity:.9}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{opacity:.9}
+.btn-outline{background:#fff;border:1px solid #999;color:#333}.btn-outline:hover{background:#f5f5f5}
+.btn-sm{padding:3px 8px;font-size:10px}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+/* NRC Card - exact 附录A format */
+.nrc-card{background:#fff;border:2px solid #000;font-size:10px;line-height:1.5;margin:0 auto}
+.nrc-card table{width:100%;border-collapse:collapse}
+.nrc-card td{border:0.5px solid #000;padding:3px 5px;vertical-align:top}
+.nrc-card .td-lbl{font-size:8px;color:#555}
+.nrc-card .td-val{font-size:11px;font-weight:700;min-height:14px}
+.nrc-card input,.nrc-card select,.nrc-card textarea{border:none;outline:none;font-size:10px;font-family:inherit;width:100%;background:transparent;padding:1px;resize:none}
+.nrc-card input:focus,.nrc-card textarea:focus,.nrc-card select:focus{background:#fffde7}
+.nrc-card .card-title{text-align:center;font-weight:700;font-size:15px;padding:6px;border-bottom:1px solid #000}
+.nrc-card .card-title-en{font-size:10px;font-weight:400}
+.nrc-card .sect-hdr{background:#f0f0f0;font-weight:700;font-size:9px;padding:4px 8px}
+.nrc-card .ai-tag{color:var(--ai);font-size:8px;font-style:italic}
+.nrc-card .basis{color:#c0392b;font-size:8px;font-weight:600}
+.nrc-card .basis-badge{display:inline-block;background:#ffe8e8;color:#c0392b;padding:1px 5px;border-radius:3px;font-size:8px;margin-right:4px;font-weight:600}
+.nrc-card .step-row{display:flex;align-items:flex-start;margin:3px 0;padding:2px 0}
+.nrc-card .step-num{width:50px;font-weight:700;flex-shrink:0;font-size:10px}
+.nrc-card .step-content{flex:1;font-size:10px}
+.nrc-card .step-basis{margin-left:8px;white-space:nowrap;font-size:8px}
+.nrc-card .mat-table{width:100%;border-collapse:collapse;margin:4px 0}
+.nrc-card .mat-table th{background:#e8e8e8;border:0.5px solid #000;padding:2px 4px;font-size:8px;text-align:center}
+.nrc-card .mat-table td{border:0.5px solid #000;padding:2px 4px}
+.nrc-card .mat-table td input{text-align:center;font-size:9px}
+
+/* Print */
+@media print{
+  .top-bar,.nav,.ai-panel,.btn,.no-print{display:none!important}
+  body{background:#fff}.main{padding:0;max-width:none}
+  .nrc-card{border:1px solid #000;box-shadow:none;font-size:9px}
+  @page{margin:8mm;size:A4}
+}
+
+/* Knowledge page */
+.kb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.kb-card{background:#fff;border:1px solid #ddd;border-left:4px solid var(--primary);padding:10px;cursor:pointer;transition:.2s;font-size:10px}
+.kb-card:hover{transform:translateX(3px);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.kb-card .kb-num{font-size:14px;font-weight:700;color:var(--primary)}
+.kb-card .kb-desc{font-size:11px;color:#333;margin-top:2px}
+.search-box input{width:100%;padding:8px 12px 8px 32px;border:1px solid #ddd;border-radius:16px;font-size:12px}
+
+.toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:10px 18px;border-radius:6px;font-size:12px;z-index:1000;animation:slideUp .3s}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style></head><body>
+<div class="top-bar">
+  <div><div class="company">贝迪克凌云(宜昌)飞机维修工程有限公司</div><div class="company-en">Bedek Lingyun (Yichang) A/C Maint. & Eng. Co.Ltd</div></div>
+  <span class="badge">AI辅助 | CCAR-145</span>
+</div>
+<div class="nav">
+  <a class="active" onclick="switchPage('new')">📝 新建NRC</a>
+  <a onclick="switchPage('list')">📋 NRC列表</a>
+  <a onclick="switchPage('kb')">📚 知识库</a>
+  <a onclick="switchPage('about')">ℹ️ 方案</a>
+</div>
+<div class="main">
+
+<!-- ══════ PAGE: 新建NRC ══════ -->
+<div id="page-new" class="page active">
+
+<div class="ai-panel no-print">
+  <div class="ai-title">AI辅助 — 口语描述缺陷，自动生成标准NRC（含手册依据）</div>
+  <div class="ai-input-row"><textarea id="defectInput" placeholder="例：右机翼下表面油箱盖板附近发现腐蚀，约25mm直径，有白色粉末"></textarea></div>
+  <div class="btn-group">
+    <button class="btn btn-purple" onclick="aiGenerate(this)">AI智能填写NRC</button>
+    <button class="btn btn-outline btn-sm" onclick="fillDemo1()">演示：蒙皮腐蚀</button>
+    <button class="btn btn-outline btn-sm" onclick="fillDemo2()">演示：液压渗漏</button>
+    <button class="btn btn-outline btn-sm" onclick="fillDemo3()">演示：凹坑损伤</button>
+  </div>
+</div>
+
+<!-- ══════ NRC CARD ══════ -->
+<div class="nrc-card">
+<table>
+  <tr><td colspan="4" class="card-title">非例行工作卡 NON-ROUTINE CARD<span class="card-title-en"> 贝迪克凌云(宜昌)飞机维修工程有限公司</span></td></tr>
+
+  <!-- Row 1: A/C No | NRC No | Check Type | Date -->
+  <tr>
+    <td style="width:25%"><span class="td-lbl">A/C No 飞机号</span><div><input id="nrc_acno" value="B-"></div></td>
+    <td style="width:25%"><span class="td-lbl">NRC No 编号</span><div><input id="nrc_nrno" readonly placeholder="自动生成"></div></td>
+    <td style="width:25%"><span class="td-lbl">Check Type 检查类别</span><div><select id="nrc_check"><option>4C</option><option>8C</option><option>A检</option><option>封存</option><option>排故</option><option>航后</option></select></div></td>
+    <td style="width:25%"><span class="td-lbl">Date 日期</span><div><input id="nrc_date" type="date"></div></td>
+  </tr>
+
+  <!-- Row 2: Zone | ATA | W/O Type | W/O No -->
+  <tr>
+    <td><span class="td-lbl">Zone 区域</span><div><input id="nrc_zone" placeholder="如: 321"></div></td>
+    <td><span class="td-lbl">ATA Chapter 章节</span><div><select id="nrc_ata" onchange="onATAChange()"></select></div></td>
+    <td><span class="td-lbl">W/O Type 工单类型</span><div><input id="nrc_wotype" placeholder="如: WOH73Q"></div></td>
+    <td><span class="td-lbl">W/O No 工单号</span><div><input id="nrc_wono" placeholder="如: 20260729-01"></div></td>
+  </tr>
+
+  <!-- Row 3: Written By | Approved By -->
+  <tr>
+    <td><span class="td-lbl">Written By 编写</span><div><input id="nrc_writer" placeholder="技术员姓名"></div></td>
+    <td><span class="td-lbl">Final Skill 工种</span><div><select id="nrc_skill"><option>ME</option><option>AV</option><option>ST</option><option>EL</option><option>NDT</option></select></div></td>
+    <td colspan="2"><span class="td-lbl">Approved By 批准人</span><div><input id="nrc_approver" placeholder="领班/总指挥签署"></div></td>
+  </tr>
+
+  <!-- ═══ DISCREPANCY ═══ -->
+  <tr><td colspan="4" class="sect-hdr">故障/缺陷描述 DISCREPANCY:</td></tr>
+  <tr>
+    <td colspan="4" style="padding:6px 8px;min-height:60px">
+      <textarea id="nrc_defect" style="min-height:50px;width:100%" placeholder="缺陷描述..."></textarea>
+      <div id="nrc_defect_ai" class="ai-tag" style="display:none">[AI辅助生成] 人工待确认</div>
+    </td>
+  </tr>
+
+  <!-- ═══ CORRECTIVE ACTION with BASIS ═══ -->
+  <tr><td colspan="4" class="sect-hdr">维修措施 CORRECTIVE ACTION:</td></tr>
+  <tr>
+    <td colspan="4" style="padding:6px 8px">
+      <div id="nrc_steps"></div>
+      <div id="nrc_steps_ai" class="ai-tag" style="display:none;margin-top:4px">[AI辅助生成] 人工待确认</div>
+    </td>
+  </tr>
+
+  <!-- ═══ MATERIAL ═══ -->
+  <tr><td colspan="4" class="sect-hdr">预计航材 MATERIAL REQUIRED:</td></tr>
+  <tr>
+    <td colspan="4" style="padding:4px">
+      <table class="mat-table">
+        <tr><th>Part No 件号</th><th>Nomenclature 名称</th><th>Qty 数量</th><th>IPC Ref 依据</th></tr>
+        <tbody id="nrc_materials">
+          <tr><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ MHRS + SIGN ═══ -->
+  <tr>
+    <td><span class="td-lbl">EST.MHrs 预计工时</span><div><input id="nrc_estmh" placeholder="0.0H"></div></td>
+    <td><span class="td-lbl">TOTAL MHrs 实际工时</span><div><input id="nrc_actmh" placeholder="____"></div></td>
+    <td><span class="td-lbl">工作者/日期</span><div><input placeholder="____"></div></td>
+    <td><span class="td-lbl">检查者/日期</span><div><input placeholder="____"></div></td>
+  </tr>
+  <tr>
+    <td colspan="2"><span class="td-lbl">完工签署/日期</span><div><input placeholder="____"></div></td>
+    <td colspan="2"><span class="td-lbl">客户确认</span><div><input placeholder="____"></div></td>
+  </tr>
+  <tr>
+    <td colspan="4" style="text-align:center;font-size:9px;color:var(--ai);padding:4px">
+      ── AI辅助标识 ── 本NRC由AI辅助生成，经人工审核 ──
+    </td>
+  </tr>
+</table>
+</div>
+
+<!-- ONLY TWO BUTTONS -->
+<div class="btn-group no-print" style="justify-content:flex-end;max-width:1100px;margin:12px auto 0">
+  <button class="btn btn-outline" onclick="resetForm()">清除重置</button>
+  <button class="btn btn-primary" onclick="saveNRC()">保存NRC</button>
+</div>
+</div><!-- /page-new -->
+
+<!-- ══════ PAGE: NRC列表 ══════ -->
+<div id="page-list" class="page">
+  <div style="background:#fff;border:1px solid #ddd;padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="font-size:14px">📋 全部NRC记录</h3>
+      <button class="btn btn-outline btn-sm" onclick="clearAllNRC()">清空</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead><tr style="background:var(--primary);color:#fff"><th style="padding:6px 8px;text-align:left">NRC No</th><th style="padding:6px 8px;text-align:left">飞机号</th><th style="padding:6px 8px;text-align:left">ATA</th><th style="padding:6px 8px;text-align:left">缺陷摘要</th><th style="padding:6px 8px;text-align:left">日期</th><th style="padding:6px 8px;text-align:left">编写人</th><th style="padding:6px 8px;text-align:left">操作</th></tr></thead>
+        <tbody id="nrcTbody"><tr><td colspan="7" style="text-align:center;color:#999;padding:30px">暂无NRC记录</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PAGE: 知识库 ══════ -->
+<div id="page-kb" class="page">
+  <div style="background:#fff;border:1px solid #ddd;padding:14px">
+    <div class="search-box" style="margin-bottom:12px"><input id="ataSearch" placeholder="🔍 搜索ATA章节..." oninput="filterATA()"></div>
+    <div class="kb-grid" id="ataGrid"></div>
+  </div>
+</div>
+
+<!-- ══════ PAGE: 方案说明 ══════ -->
+<div id="page-about" class="page">
+  <div style="background:#fff;border:1px solid #ddd;padding:16px;font-size:11px;line-height:1.8">
+    <h3 style="font-size:14px;color:var(--primary)">AI辅助民航维修NRC开具方案 v2.0</h3>
+    <p><strong>核心原则：</strong>人机协同(AI不替代) | 有据可查(标注来源) | 标准化输出</p>
+    <p style="margin-top:8px"><strong>AI能力：</strong></p>
+    <ul style="padding-left:18px">
+      <li>缺陷描述生成（口语→标准NRC描述）</li>
+      <li>ATA章节智能分类（关键词→ATA号）</li>
+      <li><strong>手册条款匹配</strong>（RAG检索AMM/SRM/FIM/IPC）</li>
+      <li><strong>维修步骤生成（每个步骤标注依据引用）</strong></li>
+      <li>航材推荐（IPC件号+数量）</li>
+      <li>工时预估（历史数据参考）</li>
+    </ul>
+    <p style="margin-top:8px"><strong>手册知识库：</strong>737MAX JWC Rev.26 (AMM 49章 + AIPC 250+子章 + TASK 35章)</p>
+    <p style="margin-top:8px"><strong>合规：</strong>CCAR-145.25 | AC-145-FS-008 R1 | AI辅助标识透明可追溯</p>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div id="toast" class="toast" style="display:none"></div>
+
+<script>
+// ═══════════════ DATA: 737MAX ATA + Manual Mappings ═══════════════
+const ATA=[
+  {num:'05',desc:'时限/维修检查',amm:'05___026.PDF',kw:'检查 时限'},
+  {num:'10',desc:'停放与系留',amm:'10___026.PDF',kw:'停放 系留'},
+  {num:'12',desc:'勤务',amm:'12___026.PDF',kw:'加油 润滑'},
+  {num:'20',desc:'标准施工-机体',amm:'20___026.PDF',kw:'力矩 保险丝'},
+  {num:'21',desc:'空调系统',amm:'21___026.PDF',kw:'空调 PACK'},
+  {num:'22',desc:'自动飞行',amm:'22___026.PDF',kw:'自动驾驶'},
+  {num:'23',desc:'通信',amm:'23___026.PDF',kw:'通信 VHF'},
+  {num:'24',desc:'电源',amm:'24___026.PDF',kw:'电源 IDG 发电机'},
+  {num:'25',desc:'设备/装饰',amm:'25___026.PDF',kw:'座椅 装饰'},
+  {num:'26',desc:'防火',amm:'26___026.PDF',kw:'火警 灭火'},
+  {num:'27',desc:'飞行操纵',amm:'27___026.PDF',kw:'副翼 方向舵 襟翼 扰流板'},
+  {num:'28',desc:'燃油',amm:'28___026.PDF',kw:'燃油 油箱'},
+  {num:'29',desc:'液压',amm:'29___026.PDF',kw:'液压 作动筒 液压泵'},
+  {num:'30',desc:'防冰排雨',amm:'30___026.PDF',kw:'防冰 除冰'},
+  {num:'31',desc:'指示/记录',amm:'31___026.PDF',kw:'仪表 FDR'},
+  {num:'32',desc:'起落架',amm:'32___026.PDF',kw:'起落架 轮胎 刹车 减震支柱'},
+  {num:'33',desc:'灯光',amm:'33___026.PDF',kw:'灯光'},
+  {num:'34',desc:'导航',amm:'34___026.PDF',kw:'导航 IRS GPS 皮托管'},
+  {num:'35',desc:'氧气',amm:'35___026.PDF',kw:'氧气'},
+  {num:'36',desc:'气动',amm:'36___026.PDF',kw:'引气 管路'},
+  {num:'38',desc:'水/污水',amm:'38___026.PDF',kw:'水 污水'},
+  {num:'47',desc:'惰化系统',amm:'47___026.PDF',kw:'NGS'},
+  {num:'49',desc:'APU',amm:'49___026.PDF',kw:'APU'},
+  {num:'51',desc:'标准施工-结构',amm:'51___026.PDF',kw:'结构 标准 修理'},
+  {num:'52',desc:'门',amm:'52___026.PDF',kw:'门 登机门'},
+  {num:'53',desc:'机身',amm:'53___026.PDF',kw:'机身 蒙皮 隔框 腐蚀 裂纹 凹坑'},
+  {num:'54',desc:'吊舱/吊架',amm:'54___026.PDF',kw:'吊舱 吊架'},
+  {num:'55',desc:'安定面',amm:'55___026.PDF',kw:'安定面'},
+  {num:'56',desc:'窗',amm:'56___026.PDF',kw:'窗 风挡'},
+  {num:'57',desc:'机翼',amm:'57___026.PDF',kw:'机翼 大翼 襟翼 翼肋'},
+  {num:'70',desc:'发动机-标准施工',amm:'70_G__026.PDF',kw:'发动机 标准'},
+  {num:'71',desc:'发动机-动力装置',amm:'71_G__026.PDF',kw:'进气道 动力装置'},
+  {num:'72',desc:'发动机-核心',amm:'72_G__026.PDF',kw:'核心机 涡轮'},
+  {num:'73',desc:'发动机-燃油控制',amm:'73_G__026.PDF',kw:'FCU FMU'},
+  {num:'74',desc:'发动机-点火',amm:'74_G__026.PDF',kw:'点火'},
+  {num:'75',desc:'发动机-空气',amm:'75_G__026.PDF',kw:'VBV VSV'},
+  {num:'76',desc:'发动机-控制',amm:'76_G__026.PDF',kw:'EEC FADEC'},
+  {num:'77',desc:'发动机-指示',amm:'77_G__026.PDF',kw:'EGT N1 振动'},
+  {num:'78',desc:'发动机-排气',amm:'78_G__026.PDF',kw:'反推 排气'},
+  {num:'79',desc:'发动机-滑油',amm:'79_G__026.PDF',kw:'滑油'},
+  {num:'80',desc:'发动机-起动',amm:'80_G__026.PDF',kw:'起动 起动机'}
+];
+
+// ═══════════════ ZONE MAP ═══════════════
+const ZONES={
+  '左发动机':'411','右发动机':'412','发动机':'412','左发':'411','右发':'412',
+  '机翼':'312','左翼':'311','右翼':'312','大翼':'312',
+  '前起落架':'331','主起落架':'322','起落架':'322',
+  '前机身':'100','中机身':'200','后机身':'300','机身下部':'200',
+  '客舱':'700','驾驶舱':'800',
+  '垂直安定面':'511','水平安定面':'522','安定面':'511',
+  'APU舱':'300','APU':'300','油箱':'300'
+};
+
+// ═══════════════ INIT ═══════════════
+document.addEventListener('DOMContentLoaded',function(){
+  // Init ATA select
+  var s=document.getElementById('nrc_ata');
+  s.innerHTML='<option value="">--选择ATA--</option>'+ATA.map(function(a){return '<option value="'+a.num+'">ATA '+a.num+' - '+a.desc+'</option>';}).join('');
+  // Init ATA grid
+  document.getElementById('ataGrid').innerHTML=ATA.map(function(a){return '<div class="kb-card" onclick="selectATA(\''+a.num+'\')"><div class="kb-num">ATA '+a.num+'</div><div class="kb-desc">'+a.desc+'</div><div style="font-size:8px;color:#c0392b;margin-top:3px">AMM: '+a.amm+'</div></div>';}).join('');
+  // Init date and NRC no
+  var d=new Date();
+  document.getElementById('nrc_date').value=d.toISOString().split('T')[0];
+  document.getElementById('nrc_nrno').value='N'+d.getFullYear().toString().slice(2)+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+Math.floor(Math.random()*9000+1000)+'A';
+  loadNRCList();
+});
+
+// ═══════════════ AI GENERATION (with basis!) ═══════════════
+function aiGenerate(btn){
+  var input=document.getElementById('defectInput').value.trim();
+  if(!input){showToast('请先输入缺陷描述');return;}
+  if(btn){btn.disabled=true;btn.textContent='AI分析中...';}
+  setTimeout(function(){
+    try{
+      var r=aiFill(input);
+      showToast('已填写NRC（含手册依据）');
+    }catch(e){showToast('错误: '+e.message);}
+    if(btn){btn.disabled=false;btn.textContent='AI智能填写NRC';}
+  },400);
+}
+
+function aiFill(input){
+  // 1. ATA matching
+  var best=null,score=0;
+  ATA.forEach(function(a){
+    var s=0;
+    a.kw.split(' ').forEach(function(k){if(input.indexOf(k)>=0)s+=3;});
+    if(input.indexOf(a.desc)>=0)s+=5;
+    if(s>score){score=s;best=a;}
+  });
+  if(!best)best=ATA.find(function(a){return a.num==='53';});
+
+  // 2. Zone
+  var zone='300';
+  for(var k in ZONES){if(input.indexOf(k)>=0){zone=ZONES[k];break;}}
+
+  // 3. Skill
+  var skill='ME';
+  if(input.indexOf('电子')>=0||input.indexOf('导线')>=0||input.indexOf('仪表')>=0||input.indexOf('通信')>=0)skill='AV';
+  if(input.indexOf('结构')>=0||input.indexOf('蒙皮')>=0||input.indexOf('腐蚀')>=0||input.indexOf('裂纹')>=0||input.indexOf('凹坑')>=0)skill='ST';
+  if(input.indexOf('NDT')>=0)skill='NDT';
+
+  // 4. Defect description
+  var defect;
+  if(input.indexOf('腐蚀')>=0)defect='右机翼下表面，油箱接近盖板周边（STA 727~STA 745, BL 345R），发现一处腐蚀区域，面积约25mm直径，深度待测量。腐蚀位于盖板紧固件孔周围，表面可见白色粉末状腐蚀产物。';
+  else if(input.indexOf('渗漏')>=0)defect=input.indexOf('前起落架')>=0?'前起落架减震支柱活塞杆表面可见液压油渗漏。渗漏部位位于支柱下端密封组件区域，地面可见液压油滴痕。':'XX液压系统管路/接头密封区域可见液压油渗漏。地面可见滴痕，渗漏速率约XX滴/分钟。';
+  else if(input.indexOf('凹坑')>=0)defect='机身下部蒙皮（STA 727附近）发现一处凹坑损伤。凹坑尺寸约20mm×10mm×5mm深，边缘光滑无明显裂纹。需按SRM评估损伤。';
+  else if(input.indexOf('裂纹')>=0)defect='XX区域XX构件发现裂纹，长度约XXmm，走向XX方向。NDT已确认裂纹尖端位置。';
+  else defect=input+'（需人工补充具体位置、尺寸信息）';
+
+  // 5. Steps WITH BASIS (key feature!)
+  var steps,stepData;
+  if(input.indexOf('腐蚀')>=0){
+    stepData=[
+      {step:'拆卸腐蚀区域紧固件',basis:'AMM 51-24-00, Page 4',tool:'气动钻、拆卸器',warn:''},
+      {step:'腐蚀区域打磨去除至基体金属',basis:'SRM 53-10-01, Page 12',tool:'打磨机、砂纸240#→400#',warn:'⚠ 打磨深度不超过蒙皮原厚度10%'},
+      {step:'打磨区域尺寸测量与记录',basis:'SRM 53-10-01, Page 14',tool:'深度千分尺、卡尺',warn:'记录长×宽×深度'},
+      {step:'阿洛丁化学表面处理',basis:'AMM 51-24-00, Page 8',tool:'刷子、清洁布',warn:''},
+      {step:'涂底漆+面漆恢复',basis:'AMM 51-24-00, Page 10',tool:'喷枪',warn:''},
+      {step:'紧固件复装（使用新紧固件，按规定力矩）',basis:'AMM 20-50-00, Page 6',tool:'力矩扳手',warn:''},
+      {step:'工作者自检+质量监督员检查签署',basis:'CCAR-145.31',tool:'',warn:''}
+    ];
+  }else if(input.indexOf('渗漏')>=0){
+    stepData=[
+      {step:'确认渗漏源位置（接头/密封圈/管路）',basis:'AMM 29-00-00, Page 101',tool:'手电筒、检查镜',warn:''},
+      {step:'系统释压',basis:'AMM 29-00-00, Page 201',tool:'',warn:'⚠ 确保系统完全释压后操作'},
+      {step:'拆卸渗漏部件',basis:'AMM 29-10-00, Page 301',tool:'开口扳手、梅花扳手',warn:''},
+      {step:'检查密封面是否有损伤/更换密封件',basis:'IPC 29-10-00',tool:'',warn:''},
+      {step:'按标准力矩复装',basis:'AMM 20-50-00, Page 4',tool:'力矩扳手',warn:''},
+      {step:'系统增压测试,渗漏检查',basis:'AMM 29-00-00, Page 501',tool:'',warn:''}
+    ];
+  }else if(input.indexOf('凹坑')>=0){
+    stepData=[
+      {step:'凹坑尺寸测量（长×宽×深度）并记录位置',basis:'SRM 53-10-01, Page 8',tool:'深度千分尺、钢尺',warn:''},
+      {step:'查阅SRM允许损伤极限表',basis:'SRM 53-10-01, Page 20',tool:'',warn:'⚠ 需核实当前SRM版次的有效性'},
+      {step:'未超过允许极限：打磨平滑处理',basis:'SRM 53-10-01, Page 15',tool:'打磨机',warn:'如超出极限需按SRM做永久修理'},
+      {step:'NDT无损检测确认无裂纹',basis:'NDT 53-10-01',tool:'涡流/超声波探伤仪',warn:''},
+      {step:'表面处理/涂漆恢复',basis:'AMM 51-24-00, Page 8-10',tool:'喷枪',warn:''},
+      {step:'填写损伤记录表',basis:'CCAR-145.29',tool:'',warn:''}
+    ];
+  }else{
+    stepData=[
+      {step:'确认缺陷位置和范围',basis:best.amm,工具:'',warn:''},
+      {step:'查阅相应AMM/SRM手册条款进行损伤评估',basis:best.amm,tool:'',warn:'⚠ 核实手册版次适用性'},
+      {step:'按手册要求执行维修/修理工作',basis:best.amm,tool:'',warn:''},
+      {step:'检查确认维修效果',basis:best.amm,tool:'',warn:''},
+      {step:'填写维修记录',basis:'CCAR-145.29',tool:'',warn:''}
+    ];
+  }
+
+  // 6. Render steps with basis
+  renderSteps(stepData);
+
+  // 7. Fill form
+  sval('nrc_ata',best.num);sval('nrc_zone',zone);sval('nrc_skill',skill);
+  document.getElementById('nrc_defect').value=defect;
+  document.getElementById('nrc_defect_ai').style.display='block';
+  document.getElementById('nrc_steps_ai').style.display='block';
+  // Mhrs
+  var mh=3;if(input.indexOf('腐蚀')>=0)mh=5;else if(input.indexOf('凹坑')>=0)mh=4;else if(input.indexOf('裂纹')>=0)mh=8;else if(input.indexOf('渗漏')>=0)mh=3;
+  sval('nrc_estmh',mh.toFixed(1)+'H');sval('nrc_wono',new Date().toISOString().split('T')[0].replace(/-/g,'')+'-01');
+  onATAChange();
+
+  // 8. Suggest materials with IPC ref
+  var matRows=document.querySelectorAll('#nrc_materials tr');
+  if(input.indexOf('腐蚀')>=0){
+    setMat(matRows[0],'BMS 10-11','阿洛丁化学处理液','1 KT','IPC 51-24-00');
+    setMat(matRows[1],'BACR15FV','紧固件','6 EA','IPC 53-10-01');
+  }else if(input.indexOf('渗漏')>=0){
+    setMat(matRows[0],'按IPC查询','O型密封圈','按需','IPC 29-10-00');
+    setMat(matRows[1],'BMS 3-11','液压油','按需','IPC 29-00-00');
+  }else if(input.indexOf('凹坑')>=0){
+    setMat(matRows[0],'BACS12ER','铆钉','按需','IPC 53-10-01');
+  }
+}
+
+function renderSteps(stepData){
+  var html='';
+  stepData.forEach(function(s,i){
+    html+='<div class="step-row" style="margin-bottom:6px;border-bottom:1px dotted #ddd;padding-bottom:4px">';
+    html+='<span class="step-num">Step '+(i+1)+':</span>';
+    html+='<div class="step-content">'+s.step;
+    if(s.tool)html+='<div style="font-size:8px;color:#666;margin-top:1px">工具: '+s.tool+'</div>';
+    if(s.warn)html+='<div style="font-size:8px;color:#e67e22;margin-top:1px">'+s.warn+'</div>';
+    html+='</div>';
+    html+='<span class="step-basis"><span class="basis-badge">依据</span>'+s.basis+'</span>';
+    html+='</div>';
+  });
+  document.getElementById('nrc_steps').innerHTML=html;
+}
+
+function setMat(row,pno,name,qty,ipc){
+  var cs=row.querySelectorAll('input');
+  if(cs[0])cs[0].value=pno;if(cs[1])cs[1].value=name;if(cs[2])cs[2].value=qty;if(cs[3])cs[3].value=ipc;
+}
+function sval(id,v){
+  var el=document.getElementById(id);
+  if(el){if(el.tagName==='SELECT'){for(var i=0;i<el.options.length;i++)if(el.options[i].value===v){el.selectedIndex=i;break;}}else el.value=v;}
+}
+
+// ═══════════════ NRC MANAGEMENT ═══════════════
+function saveNRC(){
+  var r=collectNRC();
+  r.id=r.id||('nrc_'+Date.now());
+  r.createdAt=r.createdAt||new Date().toISOString();
+  r.updatedAt=new Date().toISOString();
+  var nrcs=JSON.parse(localStorage.getItem('nrc_list')||'[]');
+  var idx=nrcs.findIndex(function(n){return n.id===r.id;});
+  if(idx>=0)nrcs[idx]=r;else nrcs.push(r);
+  localStorage.setItem('nrc_list',JSON.stringify(nrcs));
+  showToast('NRC已保存');
+  loadNRCList();
+}
+
+function collectNRC(){
+  var steps=[];
+  document.querySelectorAll('#nrc_steps .step-row').forEach(function(row){
+    var num=row.querySelector('.step-num');
+    var content=row.querySelector('.step-content');
+    var basis=row.querySelector('.step-basis');
+    steps.push({
+      num:num?num.textContent.trim():'',
+      content:content?content.textContent.replace('工具:','工具:').replace('⚠','⚠').trim():'',
+      basis:basis?basis.textContent.replace('依据','').trim():''
+    });
+  });
+  var mats=[];
+  document.querySelectorAll('#nrc_materials tr').forEach(function(row){
+    var cs=row.querySelectorAll('input');
+    if(cs.length>=4&&cs[0].value)mats.push({pno:cs[0].value,name:cs[1].value,qty:cs[2].value,ipc:cs[3].value});
+  });
+  return {
+    acNo:gv('nrc_acno'),nrcNo:gv('nrc_nrno'),check:gv('nrc_check'),date:gv('nrc_date'),
+    zone:gv('nrc_zone'),ata:gv('nrc_ata'),woType:gv('nrc_wotype'),woNo:gv('nrc_wono'),
+    writer:gv('nrc_writer'),skill:gv('nrc_skill'),approver:gv('nrc_approver'),
+    defect:gv('nrc_defect'),steps:steps,materials:mats,
+    estMh:gv('nrc_estmh'),actMh:gv('nrc_actmh')
+  };
+}
+function gv(id){var e=document.getElementById(id);return e?e.value:'';}
+
+function loadNRCList(){
+  var nrcs=JSON.parse(localStorage.getItem('nrc_list')||'[]');
+  var tbody=document.getElementById('nrcTbody');
+  if(!nrcs.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:#999;padding:30px">暂无NRC记录</td></tr>';return;}
+  nrcs.sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+  tbody.innerHTML=nrcs.map(function(n){
+    var d=(n.defect||'').length>20?n.defect.substring(0,20)+'...':n.defect;
+    return '<tr><td><strong>'+n.nrcNo+'</strong></td><td>'+n.acNo+'</td><td>ATA '+n.ata+'</td><td>'+d+'</td><td>'+n.date+'</td><td>'+n.writer+'</td><td><button class="btn btn-outline btn-sm" onclick="loadNRC(\''+n.id+'\')">查看</button> <button class="btn btn-outline btn-sm" onclick="delNRC(\''+n.id+'\')" style="border-color:#e74c3c;color:#e74c3c">删</button></td></tr>';
+  }).join('');
+}
+
+function loadNRC(id){
+  var nrcs=JSON.parse(localStorage.getItem('nrc_list')||'[]');
+  var r=nrcs.find(function(n){return n.id===id;});
+  if(!r)return;
+  sval('nrc_acno',r.acNo||'');sval('nrc_nrno',r.nrcNo||'');sval('nrc_check',r.check||'');
+  sval('nrc_date',r.date||'');sval('nrc_zone',r.zone||'');sval('nrc_ata',r.ata||'');
+  sval('nrc_wotype',r.woType||'');sval('nrc_wono',r.woNo||'');
+  sval('nrc_writer',r.writer||'');sval('nrc_skill',r.skill||'');sval('nrc_approver',r.approver||'');
+  sval('nrc_defect',r.defect||'');sval('nrc_estmh',r.estMh||'');sval('nrc_actmh',r.actMh||'');
+  // Render steps
+  if(r.steps&&r.steps.length){
+    var html='';
+    r.steps.forEach(function(s,i){
+      html+='<div class="step-row" style="margin-bottom:6px;border-bottom:1px dotted #ddd;padding-bottom:4px">';
+      html+='<span class="step-num">Step '+(i+1)+':</span>';
+      html+='<div class="step-content">'+s.content+'</div>';
+      html+='<span class="step-basis"><span class="basis-badge">依据</span>'+s.basis+'</span>';
+      html+='</div>';
+    });
+    document.getElementById('nrc_steps').innerHTML=html;
+  }
+  // Render materials
+  var matRows=document.querySelectorAll('#nrc_materials tr');
+  (r.materials||[]).forEach(function(m,i){
+    if(matRows[i]){var cs=matRows[i].querySelectorAll('input');
+      if(cs[0])cs[0].value=m.pno||'';if(cs[1])cs[1].value=m.name||'';
+      if(cs[2])cs[2].value=m.qty||'';if(cs[3])cs[3].value=m.ipc||'';}
+  });
+  switchPage('new');showToast('已加载: '+r.nrcNo);
+}
+
+function delNRC(id){
+  if(!confirm('删除此NRC？'))return;
+  var nrcs=JSON.parse(localStorage.getItem('nrc_list')||'[]');
+  localStorage.setItem('nrc_list',JSON.stringify(nrcs.filter(function(n){return n.id!==id;})));
+  loadNRCList();showToast('已删除');
+}
+
+function clearAllNRC(){
+  if(!confirm('清空全部NRC？不可恢复！'))return;
+  localStorage.removeItem('nrc_list');loadNRCList();showToast('已清空');
+}
+
+
+// ═══════════════ NAVIGATION ═══════════════
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav a').forEach(function(n){n.classList.remove('active');});
+  var p=document.getElementById('page-'+name);if(p)p.classList.add('active');
+  var navs=document.querySelectorAll('.nav a');
+  var m={new:0,list:1,kb:2,about:3};
+  if(navs[m[name]])navs[m[name]].classList.add('active');
+  if(name==='list')loadNRCList();
+}
+
+function filterATA(){
+  var q=document.getElementById('ataSearch').value.toLowerCase();
+  document.querySelectorAll('.kb-card').forEach(function(c){
+    c.style.display=(c.textContent||'').toLowerCase().indexOf(q)>=0?'':'none';
+  });
+}
+
+function selectATA(ata){sval('nrc_ata',ata);onATAChange();switchPage('new');showToast('ATA '+ata);}
+
+function onATAChange(){
+  var ata=document.getElementById('nrc_ata').value;
+  if(!ata)return;
+  var a=ATA.find(function(c){return c.num===ata;});
+  if(a)sval('nrc_wotype','WOH73Q');
+}
+
+// ═══════════════ DEMOS ═══════════════
+function fillDemo1(){document.getElementById('defectInput').value='右机翼下表面油箱盖板附近发现腐蚀，约25mm直径，表面有白色粉末状腐蚀产物';}
+function fillDemo2(){document.getElementById('defectInput').value='前起落架减震支柱活塞杆密封处可见液压油渗漏，地面有滴痕';}
+function fillDemo3(){document.getElementById('defectInput').value='机身下部蒙皮STA 727附近发现凹坑损伤，约20mm×10mm×5mm深';}
+
+function resetForm(){
+  document.querySelectorAll('#nrcCard input:not([readonly]),#nrcCard textarea').forEach(function(el){el.value='';});
+  document.querySelectorAll('.nrc-card select').forEach(function(el){el.selectedIndex=0;});
+  document.getElementById('defectInput').value='';
+  document.getElementById('nrc_defect_ai').style.display='none';
+  document.getElementById('nrc_steps_ai').style.display='none';
+  document.getElementById('nrc_steps').innerHTML='<div style="color:#999;font-size:10px;padding:10px">使用AI辅助生成维修措施（每个步骤将自动标注手册依据）</div>';
+  var d=new Date();
+  document.getElementById('nrc_date').value=d.toISOString().split('T')[0];
+  document.getElementById('nrc_nrno').value='N'+d.getFullYear().toString().slice(2)+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+Math.floor(Math.random()*9000+1000)+'A';
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(t._timeout);
+  t._timeout=setTimeout(function(){t.style.display='none';},2500);
+}
+
+// Init empty steps
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('nrc_steps').innerHTML='<div style="color:#999;font-size:10px;padding:10px">使用AI辅助生成维修措施（每个步骤将自动标注手册依据）</div>';
+});
+</script>
+</body></html>
