@@ -7,23 +7,23 @@
 <style>
 :root{--primary:#1a3365;--accent:#e67e22;--ai:#8e44ad;--bg:#e8e8e8;--bd:#000}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'SimSun','宋体','Microsoft YaHei',sans-serif;background:var(--bg);color:#000;font-size:13px}
-.top-bar{background:linear-gradient(135deg,#0a1628,#1a3a5c);color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+body{padding:0;margin:0;font-family:'SimSun','宋体','Microsoft YaHei',sans-serif;background:var(--bg);color:#000;font-size:13px}
+.top-bar{width:100%;background:linear-gradient(135deg,#0a1628,#1a3a5c);color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;height:42px}
 .top-bar .company{font-size:14px;font-weight:700}
 .top-bar .company-en{font-size:9px;opacity:.7}
 .top-bar .badge{background:var(--ai);color:#fff;padding:3px 12px;border-radius:10px;font-size:10px;font-weight:600}
-.nav{background:#fff;border-bottom:2px solid var(--primary);display:flex;padding:0 20px;overflow-x:auto;position:sticky;top:40px;z-index:99}
-.nav a{padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;color:#666;text-decoration:none;transition:.2s;white-space:nowrap}
+.nav{background:#fff;border-bottom:2px solid var(--primary);display:flex;padding:0 20px;overflow-x:auto;position:fixed;top:42px;left:0;right:0;z-index:99;height:40px}
+.nav a{padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;color:#666;text-decoration:none;transition:.2s;white-space:nowrap;pointer-events:auto}
 .nav a:hover,.nav a.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
-.main{max-width:1100px;margin:0 auto;padding:16px}
+.main{max-width:1100px;margin:84px auto 0 auto;padding:16px}
 .page{display:none}.page.active{display:block}
 
 /* AI Panel */
-.ai-panel{background:linear-gradient(135deg,#f5e6ff,#e8f4fd);border:2px solid var(--ai);border-radius:8px;padding:14px;margin-bottom:14px}
+.ai-panel{background:linear-gradient(135deg,#f5e6ff,#e8f4fd);border:2px solid var(--ai);border-radius:8px;padding:14px;margin-bottom:14px;position:relative;z-index:1}
 .ai-panel .ai-title{font-size:12px;color:var(--ai);font-weight:600;margin-bottom:8px}
 .ai-input-row{display:flex;gap:8px}
 .ai-input-row textarea{flex:1;min-height:48px;border:1px solid #d5b3e8;border-radius:6px;padding:8px;font-size:12px;font-family:inherit;resize:vertical}
-.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;transition:.2s}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;transition:.2s;position:relative;z-index:2;pointer-events:auto}
 .btn-purple{background:var(--ai);color:#fff}.btn-purple:hover{opacity:.9}
 .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{opacity:.9}
 .btn-outline{background:#fff;border:1px solid #999;color:#333}.btn-outline:hover{background:#f5f5f5}
@@ -233,36 +233,36 @@ body{font-family:'SimSun','宋体','Microsoft YaHei',sans-serif;background:var(-
 <script>
 // ═══════════════ DATA: 737MAX ATA + Manual Mappings ═══════════════
 const ATA=[
-  {num:'05',desc:'时限/维修检查',amm:'05___026.PDF',kw:'检查 时限'},
-  {num:'10',desc:'停放与系留',amm:'10___026.PDF',kw:'停放 系留'},
-  {num:'12',desc:'勤务',amm:'12___026.PDF',kw:'加油 润滑'},
-  {num:'20',desc:'标准施工-机体',amm:'20___026.PDF',kw:'力矩 保险丝'},
-  {num:'21',desc:'空调系统',amm:'21___026.PDF',kw:'空调 PACK'},
-  {num:'22',desc:'自动飞行',amm:'22___026.PDF',kw:'自动驾驶'},
-  {num:'23',desc:'通信',amm:'23___026.PDF',kw:'通信 VHF'},
-  {num:'24',desc:'电源',amm:'24___026.PDF',kw:'电源 IDG 发电机'},
-  {num:'25',desc:'设备/装饰',amm:'25___026.PDF',kw:'座椅 装饰'},
-  {num:'26',desc:'防火',amm:'26___026.PDF',kw:'火警 灭火'},
-  {num:'27',desc:'飞行操纵',amm:'27___026.PDF',kw:'副翼 方向舵 襟翼 扰流板'},
-  {num:'28',desc:'燃油',amm:'28___026.PDF',kw:'燃油 油箱'},
-  {num:'29',desc:'液压',amm:'29___026.PDF',kw:'液压 作动筒 液压泵'},
-  {num:'30',desc:'防冰排雨',amm:'30___026.PDF',kw:'防冰 除冰'},
-  {num:'31',desc:'指示/记录',amm:'31___026.PDF',kw:'仪表 FDR'},
-  {num:'32',desc:'起落架',amm:'32___026.PDF',kw:'起落架 轮胎 刹车 减震支柱'},
-  {num:'33',desc:'灯光',amm:'33___026.PDF',kw:'灯光'},
-  {num:'34',desc:'导航',amm:'34___026.PDF',kw:'导航 IRS GPS 皮托管'},
-  {num:'35',desc:'氧气',amm:'35___026.PDF',kw:'氧气'},
-  {num:'36',desc:'气动',amm:'36___026.PDF',kw:'引气 管路'},
-  {num:'38',desc:'水/污水',amm:'38___026.PDF',kw:'水 污水'},
-  {num:'47',desc:'惰化系统',amm:'47___026.PDF',kw:'NGS'},
-  {num:'49',desc:'APU',amm:'49___026.PDF',kw:'APU'},
-  {num:'51',desc:'标准施工-结构',amm:'51___026.PDF',kw:'结构 标准 修理'},
-  {num:'52',desc:'门',amm:'52___026.PDF',kw:'门 登机门'},
-  {num:'53',desc:'机身',amm:'53___026.PDF',kw:'机身 蒙皮 隔框 腐蚀 裂纹 凹坑'},
-  {num:'54',desc:'吊舱/吊架',amm:'54___026.PDF',kw:'吊舱 吊架'},
-  {num:'55',desc:'安定面',amm:'55___026.PDF',kw:'安定面'},
-  {num:'56',desc:'窗',amm:'56___026.PDF',kw:'窗 风挡'},
-  {num:'57',desc:'机翼',amm:'57___026.PDF',kw:'机翼 大翼 襟翼 翼肋'},
+  {num:'05',desc:'时限/维修检查',amm:'AMM '+ref[1:3]+'-00-00',kw:'检查 时限'},
+  {num:'10',desc:'停放与系留',amm:'AMM '+ref[1:3]+'-00-00',kw:'停放 系留'},
+  {num:'12',desc:'勤务',amm:'AMM '+ref[1:3]+'-00-00',kw:'加油 润滑'},
+  {num:'20',desc:'标准施工-机体',amm:'AMM '+ref[1:3]+'-00-00',kw:'力矩 保险丝'},
+  {num:'21',desc:'空调系统',amm:'AMM '+ref[1:3]+'-00-00',kw:'空调 PACK'},
+  {num:'22',desc:'自动飞行',amm:'AMM '+ref[1:3]+'-00-00',kw:'自动驾驶'},
+  {num:'23',desc:'通信',amm:'AMM '+ref[1:3]+'-00-00',kw:'通信 VHF'},
+  {num:'24',desc:'电源',amm:'AMM '+ref[1:3]+'-00-00',kw:'电源 IDG 发电机'},
+  {num:'25',desc:'设备/装饰',amm:'AMM '+ref[1:3]+'-00-00',kw:'座椅 装饰'},
+  {num:'26',desc:'防火',amm:'AMM '+ref[1:3]+'-00-00',kw:'火警 灭火'},
+  {num:'27',desc:'飞行操纵',amm:'AMM '+ref[1:3]+'-00-00',kw:'副翼 方向舵 襟翼 扰流板'},
+  {num:'28',desc:'燃油',amm:'AMM '+ref[1:3]+'-00-00',kw:'燃油 油箱'},
+  {num:'29',desc:'液压',amm:'AMM '+ref[1:3]+'-00-00',kw:'液压 作动筒 液压泵'},
+  {num:'30',desc:'防冰排雨',amm:'AMM '+ref[1:3]+'-00-00',kw:'防冰 除冰'},
+  {num:'31',desc:'指示/记录',amm:'AMM '+ref[1:3]+'-00-00',kw:'仪表 FDR'},
+  {num:'32',desc:'起落架',amm:'AMM '+ref[1:3]+'-00-00',kw:'起落架 轮胎 刹车 减震支柱'},
+  {num:'33',desc:'灯光',amm:'AMM '+ref[1:3]+'-00-00',kw:'灯光'},
+  {num:'34',desc:'导航',amm:'AMM '+ref[1:3]+'-00-00',kw:'导航 IRS GPS 皮托管'},
+  {num:'35',desc:'氧气',amm:'AMM '+ref[1:3]+'-00-00',kw:'氧气'},
+  {num:'36',desc:'气动',amm:'AMM '+ref[1:3]+'-00-00',kw:'引气 管路'},
+  {num:'38',desc:'水/污水',amm:'AMM '+ref[1:3]+'-00-00',kw:'水 污水'},
+  {num:'47',desc:'惰化系统',amm:'AMM '+ref[1:3]+'-00-00',kw:'NGS'},
+  {num:'49',desc:'APU',amm:'AMM '+ref[1:3]+'-00-00',kw:'APU'},
+  {num:'51',desc:'标准施工-结构',amm:'AMM '+ref[1:3]+'-00-00',kw:'结构 标准 修理'},
+  {num:'52',desc:'门',amm:'AMM '+ref[1:3]+'-00-00',kw:'门 登机门'},
+  {num:'53',desc:'机身',amm:'AMM '+ref[1:3]+'-00-00',kw:'机身 蒙皮 隔框 腐蚀 裂纹 凹坑'},
+  {num:'54',desc:'吊舱/吊架',amm:'AMM '+ref[1:3]+'-00-00',kw:'吊舱 吊架'},
+  {num:'55',desc:'安定面',amm:'AMM '+ref[1:3]+'-00-00',kw:'安定面'},
+  {num:'56',desc:'窗',amm:'AMM '+ref[1:3]+'-00-00',kw:'窗 风挡'},
+  {num:'57',desc:'机翼',amm:'AMM '+ref[1:3]+'-00-00',kw:'机翼 大翼 襟翼 翼肋'},
   {num:'70',desc:'发动机-标准施工',amm:'70_G__026.PDF',kw:'发动机 标准'},
   {num:'71',desc:'发动机-动力装置',amm:'71_G__026.PDF',kw:'进气道 动力装置'},
   {num:'72',desc:'发动机-核心',amm:'72_G__026.PDF',kw:'核心机 涡轮'},
@@ -348,39 +348,51 @@ function aiFill(input){
   var steps,stepData;
   if(input.indexOf('腐蚀')>=0){
     stepData=[
-      {step:'拆卸腐蚀区域紧固件',basis:'AMM 51-24-00, Page 4',tool:'气动钻、拆卸器',warn:''},
-      {step:'腐蚀区域打磨去除至基体金属',basis:'SRM 53-10-01, Page 12',tool:'打磨机、砂纸240#→400#',warn:'⚠ 打磨深度不超过蒙皮原厚度10%'},
-      {step:'打磨区域尺寸测量与记录',basis:'SRM 53-10-01, Page 14',tool:'深度千分尺、卡尺',warn:'记录长×宽×深度'},
-      {step:'阿洛丁化学表面处理',basis:'AMM 51-24-00, Page 8',tool:'刷子、清洁布',warn:''},
-      {step:'涂底漆+面漆恢复',basis:'AMM 51-24-00, Page 10',tool:'喷枪',warn:''},
-      {step:'紧固件复装（使用新紧固件，按规定力矩）',basis:'AMM 20-50-00, Page 6',tool:'力矩扳手',warn:''},
-      {step:'工作者自检+质量监督员检查签署',basis:'CCAR-145.31',tool:'',warn:''}
+      {step:'拆卸腐蚀区域紧固件，清理腐蚀产物',basis:'AMM TASK 51-21-95-100-801',tool:'气动钻、拆卸器',warn:''},
+      {step:'打磨去除腐蚀至基体金属（铝合金）',basis:'AMM TASK 51-21-95-100-801',tool:'打磨机、砂纸240#→400#',warn:'⚠ 打磨深度不超过蒙皮原厚度10%'},
+      {step:'打磨后尺寸测量、评估损伤是否在允许范围内',basis:'AMM 51-00-53',tool:'深度千分尺、卡尺',warn:'记录长×宽×深度'},
+      {step:'Alodine化学转化膜处理（按BMS 10-11）',basis:'AMM TASK 51-21-95-300-801',tool:'刷子、清洁布',warn:''},
+      {step:'涂底漆（BMS 10-11 Type I）+面漆恢复',basis:'AMM TASK 51-21-95-300-803',tool:'喷枪',warn:''},
+      {step:'紧固件复装（使用新紧固件，按规定力矩）',basis:'AMM 20-50-00',tool:'力矩扳手',warn:''},
+      {step:'工作者自检+质量监督员检查签署',basis:'CCAR-145.31, AMM 51-21-95',tool:'',warn:''}
     ];
   }else if(input.indexOf('渗漏')>=0){
     stepData=[
-      {step:'确认渗漏源位置（接头/密封圈/管路）',basis:'AMM 29-00-00, Page 101',tool:'手电筒、检查镜',warn:''},
-      {step:'系统释压',basis:'AMM 29-00-00, Page 201',tool:'',warn:'⚠ 确保系统完全释压后操作'},
-      {step:'拆卸渗漏部件',basis:'AMM 29-10-00, Page 301',tool:'开口扳手、梅花扳手',warn:''},
+      {step:'目视检查确认渗漏源精确位置（区分静态/动态渗漏）（接头/密封圈/管路）',basis:'AMM 29-00-00',tool:'手电筒、检查镜',warn:''},
+      {step:'对受影响液压系统进行释压（参照AMM 29-00-00释压程序）',basis:'AMM 29-00-00',tool:'',warn:'⚠ 确保系统完全释压后操作'},
+      {step:'拆卸渗漏部件',basis:'AMM 29-10-00',tool:'开口扳手、梅花扳手',warn:''},
       {step:'检查密封面是否有损伤/更换密封件',basis:'IPC 29-10-00',tool:'',warn:''},
-      {step:'按标准力矩复装',basis:'AMM 20-50-00, Page 4',tool:'力矩扳手',warn:''},
-      {step:'系统增压测试,渗漏检查',basis:'AMM 29-00-00, Page 501',tool:'',warn:''}
+      {step:'按标准力矩复装',basis:'AMM 20-50-00',tool:'力矩扳手',warn:''},
+      {step:'系统增压测试,渗漏检查',basis:'AMM 29-00-00',tool:'',warn:''}
     ];
   }else if(input.indexOf('凹坑')>=0){
     stepData=[
-      {step:'凹坑尺寸测量（长×宽×深度）并记录位置',basis:'SRM 53-10-01, Page 8',tool:'深度千分尺、钢尺',warn:''},
-      {step:'查阅SRM允许损伤极限表',basis:'SRM 53-10-01, Page 20',tool:'',warn:'⚠ 需核实当前SRM版次的有效性'},
-      {step:'未超过允许极限：打磨平滑处理',basis:'SRM 53-10-01, Page 15',tool:'打磨机',warn:'如超出极限需按SRM做永久修理'},
+      {step:'凹坑损伤测量（长宽深），记录位置（STA/BL）（长×宽×深度）并记录位置',basis:'AMM 53-00-00',tool:'深度千分尺、钢尺',warn:''},
+      {step:'查阅SRM 53-10-01允许损伤极限表，评估是否可以打磨修复',basis:'SRM 53-10-01',tool:'',warn:'⚠ 需核实当前SRM版次的有效性'},
+      {step:'如在允许范围内：打磨平滑处理至无应力集中',basis:'SRM 53-10-01',tool:'打磨机',warn:'如超出极限需按SRM做永久修理'},
       {step:'NDT无损检测确认无裂纹',basis:'NDT 53-10-01',tool:'涡流/超声波探伤仪',warn:''},
-      {step:'表面处理/涂漆恢复',basis:'AMM 51-24-00, Page 8-10',tool:'喷枪',warn:''},
-      {step:'填写损伤记录表',basis:'CCAR-145.29',tool:'',warn:''}
+      {step:'表面处理/涂漆恢复',basis:'AMM TASK 51-21-95-100-801',tool:'喷枪',warn:''},
+      {step:'填写损伤记录表',basis:'CCAR-145.31, AMM 51-21-95',tool:'',warn:''}
     ];
+  }else if(input.indexOf('叶片')>=0||input.indexOf('鼓包')>=0||input.indexOf('blade')>=0){
+    stepData=[
+      {step:'识别受影响叶片位置（序号/级数）并记录',basis:'AMM 72-00-00',tool:'孔探仪、内窥镜',warn:''},
+      {step:'查阅发动机手册评估损伤类型（鼓包/剥离/腐蚀/裂纹）',basis:'AMM 72-00-00, ESM 72-00-00',tool:'',warn:'参照发动机厂家损伤标准'},
+      {step:'如叶片保护层鼓包未超标：打磨平滑+表面处理',basis:'AMM 72-21-00, AMM 51-21-95',tool:'打磨机、砂纸',warn:'叶片修理需授权发动机工程师执行'},
+      {step:'如超标：按ESM制作工程处置方案或换发',basis:'ESM 72-00-00',tool:'',warn:'超标损伤需报告发动机厂家'},
+      {step:'完成修理后执行孔探复查',basis:'AMM 72-00-00',tool:'孔探仪',warn:''},
+      {step:'填写发动机维修记录及叶片追踪表',basis:'CCAR-145.31, AMM 51-21-95',tool:'',warn:''}
+    ];
+    mh=8;
+    skill='ME';
+    defect=input+'（需补充：叶片级数/序号、鼓包尺寸、孔探结果）';
   }else{
     stepData=[
-      {step:'确认缺陷位置和范围',basis:best.amm,工具:'',warn:''},
-      {step:'查阅相应AMM/SRM手册条款进行损伤评估',basis:best.amm,tool:'',warn:'⚠ 核实手册版次适用性'},
-      {step:'按手册要求执行维修/修理工作',basis:best.amm,tool:'',warn:''},
-      {step:'检查确认维修效果',basis:best.amm,tool:'',warn:''},
-      {step:'填写维修记录',basis:'CCAR-145.29',tool:'',warn:''}
+      {step:'确认缺陷位置和范围,basis:'AMM '+best.num+'-00-00',工具:'',warn:''},
+      {step:'查阅相应AMM/SRM手册条款进行损伤评估',basis:'AMM '+best.num+'-00-00',tool:'',warn:'⚠ 核实手册版次适用性'},
+      {step:'按手册要求执行维修/修理工作',basis:'AMM '+best.num+'-00-00',tool:'',warn:''},
+      {step:'检查确认维修效果',basis:'AMM '+best.num+'-00-00',tool:'',warn:''},
+      {step:'填写维修记录',basis:'CCAR-145.31, AMM 51-21-95',tool:'',warn:''}
     ];
   }
 
@@ -400,7 +412,7 @@ function aiFill(input){
   // 8. Suggest materials with IPC ref
   var matRows=document.querySelectorAll('#nrc_materials tr');
   if(input.indexOf('腐蚀')>=0){
-    setMat(matRows[0],'BMS 10-11','阿洛丁化学处理液','1 KT','IPC 51-24-00');
+    setMat(matRows[0],'BMS 10-11','阿洛丁化学处理液','1 KT','IPC 51-21-95');
     setMat(matRows[1],'BACR15FV','紧固件','6 EA','IPC 53-10-01');
   }else if(input.indexOf('渗漏')>=0){
     setMat(matRows[0],'按IPC查询','O型密封圈','按需','IPC 29-10-00');
