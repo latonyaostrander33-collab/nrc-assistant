@@ -233,36 +233,36 @@ body{padding:0;margin:0;font-family:'SimSun','宋体','Microsoft YaHei',sans-ser
 <script>
 // ═══════════════ DATA: 737MAX ATA + Manual Mappings ═══════════════
 const ATA=[
-  {num:'05',desc:'时限/维修检查',amm:'AMM '+ref[1:3]+'-00-00',kw:'检查 时限'},
-  {num:'10',desc:'停放与系留',amm:'AMM '+ref[1:3]+'-00-00',kw:'停放 系留'},
-  {num:'12',desc:'勤务',amm:'AMM '+ref[1:3]+'-00-00',kw:'加油 润滑'},
-  {num:'20',desc:'标准施工-机体',amm:'AMM '+ref[1:3]+'-00-00',kw:'力矩 保险丝'},
-  {num:'21',desc:'空调系统',amm:'AMM '+ref[1:3]+'-00-00',kw:'空调 PACK'},
-  {num:'22',desc:'自动飞行',amm:'AMM '+ref[1:3]+'-00-00',kw:'自动驾驶'},
-  {num:'23',desc:'通信',amm:'AMM '+ref[1:3]+'-00-00',kw:'通信 VHF'},
-  {num:'24',desc:'电源',amm:'AMM '+ref[1:3]+'-00-00',kw:'电源 IDG 发电机'},
-  {num:'25',desc:'设备/装饰',amm:'AMM '+ref[1:3]+'-00-00',kw:'座椅 装饰'},
-  {num:'26',desc:'防火',amm:'AMM '+ref[1:3]+'-00-00',kw:'火警 灭火'},
-  {num:'27',desc:'飞行操纵',amm:'AMM '+ref[1:3]+'-00-00',kw:'副翼 方向舵 襟翼 扰流板'},
-  {num:'28',desc:'燃油',amm:'AMM '+ref[1:3]+'-00-00',kw:'燃油 油箱'},
-  {num:'29',desc:'液压',amm:'AMM '+ref[1:3]+'-00-00',kw:'液压 作动筒 液压泵'},
-  {num:'30',desc:'防冰排雨',amm:'AMM '+ref[1:3]+'-00-00',kw:'防冰 除冰'},
-  {num:'31',desc:'指示/记录',amm:'AMM '+ref[1:3]+'-00-00',kw:'仪表 FDR'},
-  {num:'32',desc:'起落架',amm:'AMM '+ref[1:3]+'-00-00',kw:'起落架 轮胎 刹车 减震支柱'},
-  {num:'33',desc:'灯光',amm:'AMM '+ref[1:3]+'-00-00',kw:'灯光'},
-  {num:'34',desc:'导航',amm:'AMM '+ref[1:3]+'-00-00',kw:'导航 IRS GPS 皮托管'},
-  {num:'35',desc:'氧气',amm:'AMM '+ref[1:3]+'-00-00',kw:'氧气'},
-  {num:'36',desc:'气动',amm:'AMM '+ref[1:3]+'-00-00',kw:'引气 管路'},
-  {num:'38',desc:'水/污水',amm:'AMM '+ref[1:3]+'-00-00',kw:'水 污水'},
-  {num:'47',desc:'惰化系统',amm:'AMM '+ref[1:3]+'-00-00',kw:'NGS'},
-  {num:'49',desc:'APU',amm:'AMM '+ref[1:3]+'-00-00',kw:'APU'},
-  {num:'51',desc:'标准施工-结构',amm:'AMM '+ref[1:3]+'-00-00',kw:'结构 标准 修理'},
-  {num:'52',desc:'门',amm:'AMM '+ref[1:3]+'-00-00',kw:'门 登机门'},
-  {num:'53',desc:'机身',amm:'AMM '+ref[1:3]+'-00-00',kw:'机身 蒙皮 隔框 腐蚀 裂纹 凹坑'},
-  {num:'54',desc:'吊舱/吊架',amm:'AMM '+ref[1:3]+'-00-00',kw:'吊舱 吊架'},
-  {num:'55',desc:'安定面',amm:'AMM '+ref[1:3]+'-00-00',kw:'安定面'},
-  {num:'56',desc:'窗',amm:'AMM '+ref[1:3]+'-00-00',kw:'窗 风挡'},
-  {num:'57',desc:'机翼',amm:'AMM '+ref[1:3]+'-00-00',kw:'机翼 大翼 襟翼 翼肋'},
+  {num:'05',desc:'时限/维修检查',amm:'',kw:'检查 时限'},
+  {num:'10',desc:'停放与系留',amm:'',kw:'停放 系留'},
+  {num:'12',desc:'勤务',amm:'',kw:'加油 润滑'},
+  {num:'20',desc:'标准施工-机体',amm:'',kw:'力矩 保险丝'},
+  {num:'21',desc:'空调系统',amm:'',kw:'空调 PACK'},
+  {num:'22',desc:'自动飞行',amm:'',kw:'自动驾驶'},
+  {num:'23',desc:'通信',amm:'',kw:'通信 VHF'},
+  {num:'24',desc:'电源',amm:'',kw:'电源 IDG 发电机'},
+  {num:'25',desc:'设备/装饰',amm:'',kw:'座椅 装饰'},
+  {num:'26',desc:'防火',amm:'',kw:'火警 灭火'},
+  {num:'27',desc:'飞行操纵',amm:'',kw:'副翼 方向舵 襟翼 扰流板'},
+  {num:'28',desc:'燃油',amm:'',kw:'燃油 油箱'},
+  {num:'29',desc:'液压',amm:'',kw:'液压 作动筒 液压泵'},
+  {num:'30',desc:'防冰排雨',amm:'',kw:'防冰 除冰'},
+  {num:'31',desc:'指示/记录',amm:'',kw:'仪表 FDR'},
+  {num:'32',desc:'起落架',amm:'',kw:'起落架 轮胎 刹车 减震支柱'},
+  {num:'33',desc:'灯光',amm:'',kw:'灯光'},
+  {num:'34',desc:'导航',amm:'',kw:'导航 IRS GPS 皮托管'},
+  {num:'35',desc:'氧气',amm:'',kw:'氧气'},
+  {num:'36',desc:'气动',amm:'',kw:'引气 管路'},
+  {num:'38',desc:'水/污水',amm:'',kw:'水 污水'},
+  {num:'47',desc:'惰化系统',amm:'',kw:'NGS'},
+  {num:'49',desc:'APU',amm:'',kw:'APU'},
+  {num:'51',desc:'标准施工-结构',amm:'',kw:'结构 标准 修理'},
+  {num:'52',desc:'门',amm:'',kw:'门 登机门'},
+  {num:'53',desc:'机身',amm:'',kw:'机身 蒙皮 隔框 腐蚀 裂纹 凹坑'},
+  {num:'54',desc:'吊舱/吊架',amm:'',kw:'吊舱 吊架'},
+  {num:'55',desc:'安定面',amm:'',kw:'安定面'},
+  {num:'56',desc:'窗',amm:'',kw:'窗 风挡'},
+  {num:'57',desc:'机翼',amm:'',kw:'机翼 大翼 襟翼 翼肋'},
   {num:'70',desc:'发动机-标准施工',amm:'70_G__026.PDF',kw:'发动机 标准'},
   {num:'71',desc:'发动机-动力装置',amm:'71_G__026.PDF',kw:'进气道 动力装置'},
   {num:'72',desc:'发动机-核心',amm:'72_G__026.PDF',kw:'核心机 涡轮'},
@@ -275,6 +275,13 @@ const ATA=[
   {num:'79',desc:'发动机-滑油',amm:'79_G__026.PDF',kw:'滑油'},
   {num:'80',desc:'发动机-起动',amm:'80_G__026.PDF',kw:'起动 起动机'}
 ];
+
+// Set AMM refs dynamically
+ATA.forEach(function(a){
+  var ch = a.num;
+  var isEngine = ['70','71','72','73','74','75','76','77','78','79','80'].indexOf(ch) >= 0;
+  a.amm = 'AMM ' + ch + (isEngine ? '-50-00' : '-00-00');
+});
 
 // ═══════════════ ZONE MAP ═══════════════
 const ZONES={
@@ -388,7 +395,7 @@ function aiFill(input){
     defect=input+'（需补充：叶片级数/序号、鼓包尺寸、孔探结果）';
   }else{
     stepData=[
-      {step:'确认缺陷位置和范围,basis:'AMM '+best.num+'-00-00',工具:'',warn:''},
+      {step:'确认缺陷位置和范围',basis:'AMM '+best.num+'-00-00',tool:'',warn:''},
       {step:'查阅相应AMM/SRM手册条款进行损伤评估',basis:'AMM '+best.num+'-00-00',tool:'',warn:'⚠ 核实手册版次适用性'},
       {step:'按手册要求执行维修/修理工作',basis:'AMM '+best.num+'-00-00',tool:'',warn:''},
       {step:'检查确认维修效果',basis:'AMM '+best.num+'-00-00',tool:'',warn:''},
